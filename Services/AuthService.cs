@@ -1,19 +1,18 @@
 using System;
-using TopLibraryManager.Data;
 using TopLibraryManager.Models.Entities;
 using TopLibraryManager.Utils;
 
 namespace TopLibraryManager.Services;
 
 public class AuthService(
-    LibraryDbContext libraryDbContext,
+    ILibrarianService librarianService,
     IConsoleUIService consoleUIService
 ) : IAuthService
 {
     /// <summary>
-    /// Контекст базы данных библиотеки
+    /// Сервис работы с библиотекарями
     /// </summary>
-    private readonly LibraryDbContext _libraryDbContext = libraryDbContext;
+    private readonly ILibrarianService _librarianService = librarianService;
 
     /// <summary>
     /// Сервис консольного пользовательского интерфейса
@@ -24,7 +23,7 @@ public class AuthService(
     public Librarian Authenticate()
     {
         // проверяем, есть ли хотя бы один библиотекарь в базе данных
-        var anyLibrarian = _libraryDbContext.Librarians.Any();
+        var anyLibrarian = _librarianService.AnyLibrarianExists();
         
         if (!anyLibrarian)
         {
@@ -62,20 +61,8 @@ public class AuthService(
             password = _consoleUIService.ReadPassword("Пароль: ");
         } while (password == null);
         
-        // хэшируем пароль
-        var hashedPassword = PasswordHasher.HashPassword(password);
-        
-        // создаем библиотекаря
-        var librarian = new Librarian
-        {
-            Fio = fio,
-            Login = login,
-            Password = hashedPassword
-        };
-
-        // сохраняем библиотекаря в базе данных
-        _libraryDbContext.Librarians.Add(librarian);
-        _libraryDbContext.SaveChanges();
+        // регистрируем библиотекаря через сервис
+        var librarian = _librarianService.RegisterLibrarian(fio, login, password);
         
         _consoleUIService.WriteLine("\nУчетная запись успешно создана!");
 
@@ -100,10 +87,9 @@ public class AuthService(
                 password = _consoleUIService.ReadPassword("Пароль: ");
             } while (password == null);
             
-            // ищем библиотекаря по логину
-            var librarian = _libraryDbContext.Librarians
-                .FirstOrDefault(l => l.Login == login);
-            if (librarian == null || !PasswordHasher.VerifyPassword(password, librarian.Password))
+            // аутентифицируем библиотекаря через сервис
+            var librarian = _librarianService.Authenticate(login, password);
+            if (librarian == null)
             {
                 _consoleUIService.WriteLine("\nНеверный логин или пароль. Попробуйте снова.\n");
                 continue;
