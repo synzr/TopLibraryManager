@@ -13,15 +13,20 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((context, services) =>
     {
+        // настраиваем контекст базы данных библиотеки
         services.AddDbContext<LibraryDbContext>(options =>
         {
             var connectionString = context.Configuration.GetConnectionString("Library");
             options.UseSqlite(connectionString);
         });
+
+        // регистрируем сервисы
+        services.AddTransient<IConsoleUIService, ConsoleUIService>();
+        services.AddTransient<ICommandProcessorService, CommandProcessorService>();
+
+        // регистрируем цикл приложения
         services.AddHostedService<AppHostedService>();
     })
     .Build();
-
-
 
 await host.RunAsync();

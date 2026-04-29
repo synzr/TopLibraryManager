@@ -8,6 +8,8 @@ namespace TopLibraryManager.Services;
 
 public class AppHostedService(
     LibraryDbContext libraryDbContext,
+    IConsoleUIService consoleUIService,
+    ICommandProcessorService commandProcessorService,
     IHostApplicationLifetime appLifetime
 ) : BackgroundService
 {
@@ -17,20 +19,56 @@ public class AppHostedService(
     private readonly LibraryDbContext _libraryDbContext = libraryDbContext;
 
     /// <summary>
+    /// Сервис консольного пользовательского интерфейса
+    /// </summary>
+    private readonly IConsoleUIService _consoleUIService = consoleUIService;
+
+    /// <summary>
+    /// Сервис обработки пользовательские команд
+    /// </summary>
+    private readonly ICommandProcessorService _commandProcessorService = commandProcessorService;
+
+    /// <summary>
     /// Менеджер жизненного цикла приложения
     /// </summary>
     private readonly IHostApplicationLifetime _appLifetime = appLifetime;
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         // создаем базу данных, если она не существует
-        await _libraryDbContext.Database.EnsureCreatedAsync(stoppingToken);
+        await _libraryDbContext.Database.EnsureCreatedAsync(cancellationToken);
 
-        // выводим приветственное сообщение
-        Console.OutputEncoding = Encoding.UTF8;
-        Console.WriteLine("Привет мир!");
+        // проверяем, что пользователь аутентифицирован
+        EnsureAuthenticated();
+
+        // обрабатываем пользовательские команды
+        ProcessCommandLine(cancellationToken);
 
         // останавливаем приложение
         _appLifetime.StopApplication();
+    }
+
+    private void EnsureAuthenticated()
+    {
+        // TODO
+    }
+
+    private void ProcessCommandLine(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var commandRequest = _consoleUIService.ReadCommandRequest();
+
+            if (commandRequest != null)
+            {
+                // обработка пользовательских команд
+                var needToContinue = _commandProcessorService.ProcessCommand(commandRequest);
+
+                if (!needToContinue)
+                {
+                    break;
+                }
+            }
+        }
     }
 }
