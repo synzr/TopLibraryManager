@@ -16,8 +16,28 @@ public interface IConsoleUIService
     public CommandRequest? ReadCommandRequest();
 
     /// <summary>
+    /// Запись строки в консоль
+    /// </summary>
+    /// <param name="line">Строка текста</param>
+    public void WriteLine(string line);
+
+    /// <summary>
     /// Запись строк в консоль. Используется для ответа на пользовательский запрос
     /// </summary>
     /// <param name="lines">Строки текста</param>
     public void WriteLines(string[] lines);
+
+    /// <summary>
+    /// Чтение строки из консоли
+    /// </summary>
+    /// <param name="prompt">Подсказка для пользователя</param>
+    /// <returns>Введенная строка</returns>
+    public string? ReadLine(string? prompt);
+
+    /// <summary>
+    /// Чтение пароля из консоли с маскировкой символов
+    /// </summary>
+    /// <param name="prompt">Подсказка для пользователя</param>
+    /// <returns>Введенный пароль</returns>
+    public string? ReadPassword(string? prompt);
 }

@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Linq;
 using System.Text;
 using TopLibraryManager.Data;
+using TopLibraryManager.Models.Entities;
+using TopLibraryManager.Utils;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace TopLibraryManager.Services;
@@ -10,7 +13,8 @@ public class AppHostedService(
     LibraryDbContext libraryDbContext,
     IConsoleUIService consoleUIService,
     ICommandProcessorService commandProcessorService,
-    IHostApplicationLifetime appLifetime
+    IHostApplicationLifetime appLifetime,
+    IAuthService authService
 ) : BackgroundService
 {
     /// <summary>
@@ -33,24 +37,30 @@ public class AppHostedService(
     /// </summary>
     private readonly IHostApplicationLifetime _appLifetime = appLifetime;
 
+    /// <summary>
+    /// Сервис аутентификации
+    /// </summary>
+    private readonly IAuthService _authService = authService;
+
+    /// <summary>
+    /// Текущий аутентифицированный библиотекарь
+    /// </summary>
+    private Librarian? _currentLibrarian;
+
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         // создаем базу данных, если она не существует
         await _libraryDbContext.Database.EnsureCreatedAsync(cancellationToken);
 
-        // проверяем, что пользователь аутентифицирован
-        EnsureAuthenticated();
+        // аутентификация библиотекаря
+        _currentLibrarian = _authService.Authenticate();
+        _consoleUIService.WriteLine($"\nДобро пожаловать, {_currentLibrarian.Fio}!");
 
         // обрабатываем пользовательские команды
         ProcessCommandLine(cancellationToken);
 
         // останавливаем приложение
         _appLifetime.StopApplication();
-    }
-
-    private void EnsureAuthenticated()
-    {
-        // TODO
     }
 
     private void ProcessCommandLine(CancellationToken cancellationToken)

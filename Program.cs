@@ -21,8 +21,9 @@ var host = Host.CreateDefaultBuilder(args)
         });
 
         // регистрируем сервисы
-        services.AddTransient<IConsoleUIService, ConsoleUIService>();
+        services.AddSingleton<IConsoleUIService, ConsoleUIService>();
         services.AddTransient<ICommandProcessorService, CommandProcessorService>();
+        services.AddTransient<IAuthService, AuthService>();
 
         // регистрируем цикл приложения
         services.AddHostedService<AppHostedService>();
