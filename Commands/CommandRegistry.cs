@@ -4,26 +4,42 @@ using System.Linq;
 
 namespace TopLibraryManager.Commands;
 
-/// <summary>
-/// Реестр для сопоставления имен команд с экземплярами ICommand
-/// </summary>
 public class CommandRegistry
 {
-    private readonly Dictionary<string, ICommand> _commands = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ICommandFactory _commandFactory;
     private readonly Dictionary<string, string> _aliasesToPrimary = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _primaryCommands = new(StringComparer.OrdinalIgnoreCase);
+
+    public CommandRegistry(ICommandFactory commandFactory)
+    {
+        _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
+        
+        var commandNames = _commandFactory.GetAvailableCommandNames();
+        foreach (var name in commandNames)
+        {
+            _primaryCommands.Add(name);
+        }
+
+        foreach (var primaryName in _primaryCommands)
+        {
+            var aliases = _commandFactory.GetAliasesForCommand(primaryName);
+            foreach (var alias in aliases)
+            {
+                _aliasesToPrimary[alias] = primaryName;
+            }
+        }
+    }
 
     /// <summary>
     /// Регистрирует команду с ее основным именем
     /// </summary>
     /// <param name="name">Основное имя команды</param>
-    /// <param name="command">Экземпляр команды</param>
+    /// <param name="command">Экземпляр команды (ignored in new architecture)</param>
     public void RegisterCommand(string name, ICommand command)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Имя команды не может быть пустым", nameof(name));
 
-        _commands[name] = command ?? throw new ArgumentNullException(nameof(command));
         _primaryCommands.Add(name);
     }
 
@@ -37,10 +53,6 @@ public class CommandRegistry
         if (string.IsNullOrWhiteSpace(alias))
             throw new ArgumentException("Псевдоним не может быть пустым", nameof(alias));
 
-        if (!_commands.TryGetValue(commandName, out var command))
-            throw new ArgumentException($"Команда '{commandName}' не зарегистрирована", nameof(commandName));
-
-        _commands[alias] = command;
         _aliasesToPrimary[alias] = commandName;
     }
 
@@ -51,8 +63,15 @@ public class CommandRegistry
     /// <returns>Экземпляр ICommand или null, если не найден</returns>
     public ICommand? GetCommand(string commandName)
     {
-        _commands.TryGetValue(commandName, out var command);
-        return command;
+        if (string.IsNullOrWhiteSpace(commandName))
+            return null;
+
+        if (_aliasesToPrimary.TryGetValue(commandName, out var primaryName))
+        {
+            commandName = primaryName;
+        }
+
+        return _commandFactory.CreateCommand(commandName);
     }
 
     /// <summary>
@@ -62,7 +81,13 @@ public class CommandRegistry
     /// <returns>True, если команда существует</returns>
     public bool HasCommand(string commandName)
     {
-        return _commands.ContainsKey(commandName);
+        if (string.IsNullOrWhiteSpace(commandName))
+            return false;
+
+        if (_primaryCommands.Contains(commandName))
+            return true;
+
+        return _aliasesToPrimary.ContainsKey(commandName);
     }
 
     /// <summary>
@@ -93,6 +118,18 @@ public class CommandRegistry
     /// <returns>Коллекция всех имен команд</returns>
     public IEnumerable<string> GetAllCommandNames()
     {
-        return _commands.Keys.OrderBy(c => c);
+        var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        
+        foreach (var primary in _primaryCommands)
+        {
+            allNames.Add(primary);
+        }
+        
+        foreach (var alias in _aliasesToPrimary.Keys)
+        {
+            allNames.Add(alias);
+        }
+        
+        return allNames.OrderBy(c => c);
     }
 }
