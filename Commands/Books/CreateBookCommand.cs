@@ -1,9 +1,15 @@
+using System;
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.Books;
 
 public class CreateBookCommand : ICommand
 {
+    public string Name => "новаякнига";
+    public IEnumerable<string> Aliases => new[] { "добавитькнигу", "addbook" };
+    public string Description => "Добавление новой книги в библиотеку";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IBookService _bookService;
 

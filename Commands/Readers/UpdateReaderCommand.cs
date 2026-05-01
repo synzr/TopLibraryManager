@@ -1,10 +1,14 @@
-using TopLibraryManager.Commands;
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.Readers;
 
 public class UpdateReaderCommand : ICommand
 {
+    public string Name => "изменитьчитателя";
+    public IEnumerable<string> Aliases => new[] { "обновитьчитателя", "updatereader" };
+    public string Description => "Обновление информации о читателе по ID";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IReaderService _readerService;
 

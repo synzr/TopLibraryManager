@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 using TopLibraryManager.Models.Entities;
 
@@ -5,6 +6,10 @@ namespace TopLibraryManager.Commands.Readers;
 
 public class CreateReaderCommand : ICommand
 {
+    public string Name => "новыйчитатель";
+    public IEnumerable<string> Aliases => new[] { "регистрациячитателя", "registerreader" };
+    public string Description => "Добавление нового читателя в библиотеку";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IReaderService _readerService;
 

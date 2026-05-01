@@ -5,14 +5,12 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using TopLibraryManager.Commands.Books;
 using TopLibraryManager.Commands.Librarians;
+using TopLibraryManager.Commands.Loans;
 using TopLibraryManager.Commands.Readers;
 using TopLibraryManager.Commands.System;
 
 namespace TopLibraryManager.Commands;
 
-/// <summary>
-/// Реализация фабрики, создающей экземпляры команд с использованием dependency injection
-/// </summary>
 public class CommandFactory : ICommandFactory
 {
     private readonly IServiceProvider _serviceProvider;
@@ -107,60 +105,98 @@ public class CommandFactory : ICommandFactory
     /// </summary>
     private void DiscoverAndRegisterCommands()
     {
-        RegisterCommand("новаякнига", typeof(CreateBookCommand));
-        RegisterAliasIfExists("новаякнига", "добавитькнигу");
-        RegisterAliasIfExists("новаякнига", "addbook");
+        // Список всех типов команд для регистрации
+        var commandTypes = new List<Type>
+        {
+            // Books commands
+            typeof(CreateBookCommand),
+            typeof(DeleteBookCommand),
+            typeof(UpdateBookCommand),
+            typeof(SearchBooksCommand),
+            
+            // Librarians commands
+            typeof(RegisterLibrarianCommand),
+            typeof(DeleteLibrarianCommand),
+            typeof(GetLibrarianCommand),
+            
+            // Readers commands
+            typeof(CreateReaderCommand),
+            typeof(DeleteReaderCommand),
+            typeof(GetReaderCommand),
+            typeof(SearchReadersCommand),
+            typeof(UpdateReaderCommand),
+            
+            // Loans commands
+            typeof(CreateLoanCommand),
+            typeof(ReturnBookCommand),
+            typeof(ListActiveLoansCommand),
+            typeof(ViewLoanDetailsCommand),
+            typeof(PayFineCommand),
+            
+            // System commands
+            typeof(ExitCommand),
+            typeof(HelloCommand),
+            typeof(HelpCommand),
+            typeof(UnknownCommand)
+        };
+
+        foreach (var commandType in commandTypes)
+        {
+            try
+            {
+                // Для HelpCommand используем специальную обработку из-за циклической зависимости
+                if (commandType == typeof(HelpCommand))
+                {
+                    RegisterHelpCommandWithoutCircularDependency(commandType);
+                    continue;
+                }
+                
+                // Создаем экземпляр команды через DI для получения метаданных
+                var command = (ICommand)_serviceProvider.GetRequiredService(commandType);
+                
+                // Регистрируем команду с ее основным именем
+                var primaryName = command.Name;
+                if (string.IsNullOrWhiteSpace(primaryName))
+                {
+                    // Fallback: используем имя типа по умолчанию
+                    primaryName = GetDefaultCommandName(commandType);
+                }
+                
+                RegisterCommand(primaryName, commandType);
+                
+                // Регистрируем все алиасы
+                foreach (var alias in command.Aliases)
+                {
+                    if (!string.IsNullOrWhiteSpace(alias))
+                    {
+                        RegisterAlias(primaryName, alias);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку, но продолжаем регистрацию других команд
+                Console.WriteLine($"Warning: Failed to register command {commandType.Name}: {ex.Message}");
+            }
+        }
+    }
+    
+    private void RegisterHelpCommandWithoutCircularDependency(Type helpCommandType)
+    {
+        // Для HelpCommand используем хардкодированные метаданные, чтобы избежать циклической зависимости
+        // HelpCommand зависит от ICommandFactory, который еще создается
+        const string primaryName = "помощь";
+        var aliases = new[] { "help" };
         
-        RegisterCommand("удалитькнигу", typeof(DeleteBookCommand));
-        RegisterAliasIfExists("удалитькнигу", "deletebook");
-
-        RegisterCommand("изменитькнигу", typeof(UpdateBookCommand));
-        RegisterAliasIfExists("изменитькнигу", "обновитькнигу");
-        RegisterAliasIfExists("изменитькнигу", "updatebook");
-
-        RegisterCommand("книги", typeof(SearchBooksCommand));
-        RegisterAliasIfExists("книги", "поисккниг");
-        RegisterAliasIfExists("книги", "searchbooks");
-
-        RegisterCommand("новыйбиблиотекарь", typeof(RegisterLibrarianCommand));
-        RegisterAliasIfExists("новыйбиблиотекарь", "регистрациябиблиотекаря");
-        RegisterAliasIfExists("новыйбиблиотекарь", "registerlibrarian");
-
-        RegisterCommand("удалитьбиблиотекаря", typeof(DeleteLibrarianCommand));
-        RegisterAliasIfExists("удалитьбиблиотекаря", "deletelibrarian");
-
-        RegisterCommand("посмотретьбиблиотекаря", typeof(GetLibrarianCommand));
-        RegisterAliasIfExists("посмотретьбиблиотекаря", "getlibrarian");
-
-        RegisterCommand("новыйчитатель", typeof(CreateReaderCommand));
-        RegisterAliasIfExists("новыйчитатель", "регистрациячитателя");
-        RegisterAliasIfExists("новыйчитатель", "registerreader");
-
-        RegisterCommand("удалитьчитателя", typeof(DeleteReaderCommand));
-        RegisterAliasIfExists("удалитьчитателя", "deletereader");
-
-        RegisterCommand("посмотретьчитателя", typeof(GetReaderCommand));
-        RegisterAliasIfExists("посмотретьчитателя", "getreader");
-
-        RegisterCommand("читатели", typeof(SearchReadersCommand));
-        RegisterAliasIfExists("читатели", "поискчитателей");
-        RegisterAliasIfExists("читатели", "searchreaders");
-
-        RegisterCommand("изменитьчитателя", typeof(UpdateReaderCommand));
-        RegisterAliasIfExists("изменитьчитателя", "обновитьчитателя");
-        RegisterAliasIfExists("изменитьчитателя", "updatereader");
-
-        RegisterCommand("выход", typeof(ExitCommand));
-        RegisterAliasIfExists("выход", "exit");
-        RegisterAliasIfExists("выход", "quit");
-
-        RegisterCommand("привет", typeof(HelloCommand));
-        RegisterAliasIfExists("привет", "hello");
-
-        RegisterCommand("помощь", typeof(HelpCommand));
-        RegisterAliasIfExists("помощь", "help");
-
-        RegisterCommand("unknown", typeof(UnknownCommand));
+        RegisterCommand(primaryName, helpCommandType);
+        
+        foreach (var alias in aliases)
+        {
+            if (!string.IsNullOrWhiteSpace(alias))
+            {
+                RegisterAlias(primaryName, alias);
+            }
+        }
     }
 
     /// <summary>

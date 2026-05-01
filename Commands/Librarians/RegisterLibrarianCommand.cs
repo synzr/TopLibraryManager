@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TopLibraryManager.Commands;
 using TopLibraryManager.Services.Interfaces;
 
@@ -5,6 +6,10 @@ namespace TopLibraryManager.Commands.Librarians;
 
 public class RegisterLibrarianCommand : ICommand
 {
+    public string Name => "новыйбиблиотекарь";
+    public IEnumerable<string> Aliases => new[] { "регистрациябиблиотекаря", "registerlibrarian" };
+    public string Description => "Регистрация нового библиотекаря";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly ILibrarianService _librarianService;
 

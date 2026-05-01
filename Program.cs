@@ -10,6 +10,7 @@ using TopLibraryManager.Commands;
 using TopLibraryManager.Commands.Books;
 using TopLibraryManager.Commands.Readers;
 using TopLibraryManager.Commands.Librarians;
+using TopLibraryManager.Commands.Loans;
 using TopLibraryManager.Commands.System;
 
 var host = Host.CreateDefaultBuilder(args)
@@ -32,6 +33,8 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient<ILibrarianService, LibrarianService>();
         services.AddTransient<IBookService, BookService>();
         services.AddTransient<IReaderService, ReaderService>();
+        services.AddTransient<ILoanService, LoanService>();
+        services.AddTransient<IFineService, FineService>();
         services.AddTransient<ICommandProcessorService, CommandProcessorService>();
         services.AddTransient<IAuthService, AuthService>();
 
@@ -54,6 +57,12 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient<GetReaderCommand>();
         services.AddTransient<SearchReadersCommand>();
         services.AddTransient<UpdateReaderCommand>();
+
+        services.AddTransient<CreateLoanCommand>();
+        services.AddTransient<ReturnBookCommand>();
+        services.AddTransient<ListActiveLoansCommand>();
+        services.AddTransient<ViewLoanDetailsCommand>();
+        services.AddTransient<PayFineCommand>();
 
         services.AddTransient<ExitCommand>();
         services.AddTransient<HelloCommand>();

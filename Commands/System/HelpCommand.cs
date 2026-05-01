@@ -1,16 +1,26 @@
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.System;
 
 public class HelpCommand : ICommand
 {
+    public string Name => "помощь";
+    public IEnumerable<string> Aliases => new[] { "help" };
+    public string Description => "Отображение справочного сообщения";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly CommandRegistry _commandRegistry;
+    private readonly ICommandFactory _commandFactory;
 
-    public HelpCommand(IConsoleUIService consoleUIService, CommandRegistry commandRegistry)
+    public HelpCommand(
+        IConsoleUIService consoleUIService, 
+        CommandRegistry commandRegistry,
+        ICommandFactory commandFactory)
     {
         _consoleUIService = consoleUIService ?? throw new ArgumentNullException(nameof(consoleUIService));
         _commandRegistry = commandRegistry ?? throw new ArgumentNullException(nameof(commandRegistry));
+        _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
     }
 
     /// <inheritdoc />
@@ -37,8 +47,8 @@ public class HelpCommand : ICommand
                 _consoleUIService.WriteLine($"  {commandName}");
             }
             
-            // Добавляем описание команды
-            var description = GetCommandDescription(commandName);
+            // Получаем описание команды из ее метаданных
+            var description = GetCommandDescriptionFromMetadata(commandName);
             if (!string.IsNullOrEmpty(description))
             {
                 _consoleUIService.WriteLine($"    {description}");
@@ -48,29 +58,22 @@ public class HelpCommand : ICommand
         return true;
     }
 
-    private string GetCommandDescription(string commandName)
+    private string GetCommandDescriptionFromMetadata(string commandName)
     {
-        return commandName.ToLower() switch
+        try
         {
-            "привет" => "Приветственное сообщение",
-            "рег" => "Регистрация нового библиотекаря",
-            "кто" => "Получение информации о библиотекаре по логину или ID",
-            "удлбиб" => "Удаление библиотекаря по логину или ID",
-            "выход" => "Завершение работы приложения",
-            "помощь" => "Отображение этого справочного сообщения",
-            "новаякнига" => "Добавление новой книги в библиотеку",
-            "изменитькнигу" => "Обновление информации о книге по ID",
-            "удалитькнигу" => "Удаление книги по ID",
-            "книги" => "Поиск книг по названию, автору, жанру или году",
-            "новыйчитатель" => "Добавление нового читателя в библиотеку",
-            "изменитьчитателя" => "Обновление информации о читателе по ID",
-            "удалитьчитателя" => "Удаление читателя по ID",
-            "читатели" => "Поиск читателей по ФИО, email или телефону",
-            "посмотретьчитателя" => "Получение информации о читателе по ID",
-            "новыйбиблиотекарь" => "Регистрация нового библиотекаря",
-            "удалитьбиблиотекаря" => "Удаление библиотекаря по логину или ID",
-            "посмотретьбиблиотекаря" => "Получение информации о библиотекаре по логину или ID",
-            _ => string.Empty
-        };
+            // Создаем экземпляр команды через фабрику для получения метаданных
+            var command = _commandFactory.CreateCommand(commandName);
+            if (command != null)
+            {
+                return command.Description;
+            }
+        }
+        catch
+        {
+            // Если не удалось создать команду, возвращаем пустую строку
+        }
+        
+        return string.Empty;
     }
 }

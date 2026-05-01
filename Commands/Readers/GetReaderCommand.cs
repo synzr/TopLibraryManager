@@ -1,10 +1,14 @@
-using TopLibraryManager.Commands;
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.Readers;
 
 public class GetReaderCommand : ICommand
 {
+    public string Name => "посмотретьчитателя";
+    public IEnumerable<string> Aliases => new[] { "getreader" };
+    public string Description => "Получение информации о читателе по ID";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IReaderService _readerService;
 

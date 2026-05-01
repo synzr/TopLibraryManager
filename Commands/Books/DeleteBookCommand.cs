@@ -1,9 +1,14 @@
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.Books;
 
 public class DeleteBookCommand : ICommand
 {
+    public string Name => "удалитькнигу";
+    public IEnumerable<string> Aliases => new[] { "deletebook" };
+    public string Description => "Удаление книги по ID";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IBookService _bookService;
 

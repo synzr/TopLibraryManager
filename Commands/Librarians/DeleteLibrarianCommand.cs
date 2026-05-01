@@ -1,10 +1,14 @@
-using TopLibraryManager.Commands;
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.Librarians;
 
 public class DeleteLibrarianCommand : ICommand
 {
+    public string Name => "удалитьбиблиотекаря";
+    public IEnumerable<string> Aliases => new[] { "deletelibrarian" };
+    public string Description => "Удаление библиотекаря по логину или ID";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly ILibrarianService _librarianService;
 

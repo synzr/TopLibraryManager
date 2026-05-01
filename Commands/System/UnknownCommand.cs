@@ -1,9 +1,15 @@
+using System;
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.System;
 
 public class UnknownCommand : ICommand
 {
+    public string Name => "unknown";
+    public IEnumerable<string> Aliases => Array.Empty<string>();
+    public string Description => "Обработка неизвестных команд";
+    
     private readonly IConsoleUIService _consoleUIService;
 
     public UnknownCommand(IConsoleUIService consoleUIService)

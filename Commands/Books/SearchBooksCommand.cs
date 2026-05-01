@@ -1,9 +1,14 @@
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.Books;
 
 public class SearchBooksCommand : ICommand
 {
+    public string Name => "книги";
+    public IEnumerable<string> Aliases => new[] { "поисккниг", "searchbooks" };
+    public string Description => "Поиск книг по названию, автору, жанру или году";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IBookService _bookService;
 

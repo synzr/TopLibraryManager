@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TopLibraryManager.Commands;
 using TopLibraryManager.Services.Interfaces;
 
@@ -5,6 +7,10 @@ namespace TopLibraryManager.Commands.Readers;
 
 public class DeleteReaderCommand : ICommand
 {
+    public string Name => "удалитьчитателя";
+    public IEnumerable<string> Aliases => new[] { "deletereader" };
+    public string Description => "Удаление читателя по ID";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IReaderService _readerService;
 

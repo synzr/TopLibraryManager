@@ -1,10 +1,14 @@
-using TopLibraryManager.Commands;
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.Readers;
 
 public class SearchReadersCommand : ICommand
 {
+    public string Name => "читатели";
+    public IEnumerable<string> Aliases => new[] { "поискчитателей", "searchreaders" };
+    public string Description => "Поиск читателей по ФИО, email или телефону";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IReaderService _readerService;
 

@@ -20,6 +20,16 @@ public class LibraryDbContext : DbContext
     /// </summary>
     public DbSet<Reader> Readers { get; set; }
 
+    /// <summary>
+    /// Выдачи книг
+    /// </summary>
+    public DbSet<Loan> Loans { get; set; }
+
+    /// <summary>
+    /// Штрафы по выдачам книг
+    /// </summary>
+    public DbSet<Fine> Fines { get; set; }
+
     public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
     {
     }

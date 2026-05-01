@@ -1,9 +1,15 @@
+using System;
+using System.Collections.Generic;
 using TopLibraryManager.Services.Interfaces;
 
 namespace TopLibraryManager.Commands.Books;
 
 public class UpdateBookCommand : ICommand
 {
+    public string Name => "изменитькнигу";
+    public IEnumerable<string> Aliases => new[] { "обновитькнигу", "updatebook" };
+    public string Description => "Обновление информации о книге по ID";
+    
     private readonly IConsoleUIService _consoleUIService;
     private readonly IBookService _bookService;
 
