@@ -10,15 +10,17 @@ namespace TopLibraryManager.Services;
 
 public class CommandProcessorService(
     IConsoleUIService consoleUIService,
-    ILibrarianService librarianService
+    ILibrarianService librarianService,
+    IBookService bookService
 ) : ICommandProcessorService
 {
     /// <summary>
-    /// Реестр команд 
+    /// Реестр команд
     /// </summary>
     private readonly CommandRegistry _commandRegistry = InitializeCommandRegistry(
         consoleUIService,
-        librarianService
+        librarianService,
+        bookService
     );
 
     /// <inheritdoc />
@@ -38,47 +40,77 @@ public class CommandProcessorService(
     /// </summary>
     private static CommandRegistry InitializeCommandRegistry(
         IConsoleUIService consoleUIService,
-        ILibrarianService librarianService)
+        ILibrarianService librarianService,
+        IBookService bookService)
     {
         var registry = new CommandRegistry();
 
         // регистрируем команды с их основными именами
         registry.RegisterCommand(
             "привет",
-            new HelloCommand(consoleUIService, librarianService)
+            new HelloCommand(consoleUIService, librarianService, bookService)
         );
 
         registry.RegisterCommand(
             "рег",
-            new RegisterLibrarianCommand(consoleUIService, librarianService)
+            new RegisterLibrarianCommand(consoleUIService, librarianService, bookService)
         );
         registry.RegisterAlias("регистрациябиблиотекаря", "рег");
 
         registry.RegisterCommand(
             "кто",
-            new GetLibrarianCommand(consoleUIService, librarianService)
+            new GetLibrarianCommand(consoleUIService, librarianService, bookService)
         );
 
         registry.RegisterCommand(
             "удлбиб",
-            new DeleteLibrarianCommand(consoleUIService, librarianService)
+            new DeleteLibrarianCommand(consoleUIService, librarianService, bookService)
         );
         registry.RegisterAlias("удалитьбиблиотекаря", "удлбиб");
 
         registry.RegisterCommand(
             "помощь",
-            new HelpCommand(consoleUIService, librarianService, registry)
+            new HelpCommand(consoleUIService, librarianService, bookService, registry)
         );
 
         registry.RegisterCommand(
             "выход",
-            new ExitCommand(consoleUIService, librarianService)
+            new ExitCommand(consoleUIService, librarianService, bookService)
         );
 
         registry.RegisterCommand(
             "unknown",
-            new UnknownCommand(consoleUIService, librarianService)
+            new UnknownCommand(consoleUIService, librarianService, bookService)
         );
+
+        // регистрируем команды для работы с книгами
+        registry.RegisterCommand(
+            "добавитькнигу",
+            new CreateBookCommand(consoleUIService, librarianService, bookService)
+        );
+        registry.RegisterAlias("новаякнига", "добавитькнигу");
+        registry.RegisterAlias("добкн", "добавитькнигу");
+
+        registry.RegisterCommand(
+            "обновитькнигу",
+            new UpdateBookCommand(consoleUIService, librarianService, bookService)
+        );
+        registry.RegisterAlias("изменитькнигу", "обновитькнигу");
+        registry.RegisterAlias("обнкн", "обновитькнигу");
+
+        registry.RegisterCommand(
+            "удалитькнигу",
+            new DeleteBookCommand(consoleUIService, librarianService, bookService)
+        );
+        registry.RegisterAlias("удлкн", "удалитькнигу");
+
+        registry.RegisterCommand(
+            "найтикниги",
+            new SearchBooksCommand(consoleUIService, librarianService, bookService)
+        );
+        registry.RegisterAlias("поисккниг", "найтикниги");
+        registry.RegisterAlias("книги", "найтикниги");
+        registry.RegisterAlias("найкн", "найтикниги");
 
         return registry;
     }

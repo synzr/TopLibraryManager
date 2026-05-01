@@ -5,9 +5,10 @@ namespace TopLibraryManager.Commands;
 public class RegisterLibrarianCommand : BaseCommand
 {
     public RegisterLibrarianCommand(
-        IConsoleUIService consoleUIService, 
-        ILibrarianService librarianService) 
-        : base(consoleUIService, librarianService)
+        IConsoleUIService consoleUIService,
+        ILibrarianService librarianService,
+        IBookService bookService)
+        : base(consoleUIService, librarianService, bookService)
     {
     }
 

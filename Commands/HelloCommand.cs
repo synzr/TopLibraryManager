@@ -5,9 +5,10 @@ namespace TopLibraryManager.Commands;
 public class HelloCommand : BaseCommand
 {
     public HelloCommand(
-        IConsoleUIService consoleUIService, 
-        ILibrarianService librarianService) 
-        : base(consoleUIService, librarianService)
+        IConsoleUIService consoleUIService,
+        ILibrarianService librarianService,
+        IBookService bookService)
+        : base(consoleUIService, librarianService, bookService)
     {
     }
 

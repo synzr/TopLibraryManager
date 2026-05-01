@@ -10,10 +10,11 @@ public class HelpCommand : BaseCommand
     private readonly CommandRegistry _commandRegistry;
 
     public HelpCommand(
-        IConsoleUIService consoleUIService, 
+        IConsoleUIService consoleUIService,
         ILibrarianService librarianService,
-        CommandRegistry commandRegistry) 
-        : base(consoleUIService, librarianService)
+        IBookService bookService,
+        CommandRegistry commandRegistry)
+        : base(consoleUIService, librarianService, bookService)
     {
         _commandRegistry = commandRegistry ?? throw new ArgumentNullException(nameof(commandRegistry));
     }
@@ -64,6 +65,10 @@ public class HelpCommand : BaseCommand
             "удлбиб" => "Удаление библиотекаря по логину или ID",
             "выход" => "Завершение работы приложения",
             "помощь" => "Отображение этого справочного сообщения",
+            "добавитькнигу" => "Добавление новой книги в библиотеку",
+            "обновитькнигу" => "Обновление информации о книге по ID",
+            "удалитькнигу" => "Удаление книги по ID",
+            "найтикниги" => "Поиск книг по названию, автору, жанру или году",
             _ => string.Empty
         };
     }

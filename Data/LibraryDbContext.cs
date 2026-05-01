@@ -10,6 +10,11 @@ public class LibraryDbContext : DbContext
     /// </summary>
     public DbSet<Librarian> Librarians { get; set; }
 
+    /// <summary>
+    /// Книги
+    /// </summary>
+    public DbSet<Book> Books { get; set; }
+
     public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
     {
     }

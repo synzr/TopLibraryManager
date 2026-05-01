@@ -5,9 +5,10 @@ namespace TopLibraryManager.Commands;
 public class ExitCommand : BaseCommand
 {
     public ExitCommand(
-        IConsoleUIService consoleUIService, 
-        ILibrarianService librarianService) 
-        : base(consoleUIService, librarianService)
+        IConsoleUIService consoleUIService,
+        ILibrarianService librarianService,
+        IBookService bookService)
+        : base(consoleUIService, librarianService, bookService)
     {
     }
 
