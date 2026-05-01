@@ -19,14 +19,21 @@ public abstract class BaseCommand : ICommand
     /// </summary>
     protected readonly IBookService _bookService;
 
+    /// <summary>
+    /// Сервис работы с читателями
+    /// </summary>
+    protected readonly IReaderService _readerService;
+
     protected BaseCommand(
         IConsoleUIService consoleUIService,
         ILibrarianService librarianService,
-        IBookService bookService)
+        IBookService bookService,
+        IReaderService readerService)
     {
         _consoleUIService = consoleUIService;
         _librarianService = librarianService;
         _bookService = bookService;
+        _readerService = readerService;
     }
 
     /// <inheritdoc />

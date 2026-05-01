@@ -1,4 +1,4 @@
-using TopLibraryManager.Services;
+﻿using TopLibraryManager.Services;
 
 namespace TopLibraryManager.Commands;
 
@@ -13,8 +13,9 @@ public class HelpCommand : BaseCommand
         IConsoleUIService consoleUIService,
         ILibrarianService librarianService,
         IBookService bookService,
+        IReaderService readerService,
         CommandRegistry commandRegistry)
-        : base(consoleUIService, librarianService, bookService)
+        : base(consoleUIService, librarianService, bookService, readerService)
     {
         _commandRegistry = commandRegistry ?? throw new ArgumentNullException(nameof(commandRegistry));
     }
@@ -69,6 +70,11 @@ public class HelpCommand : BaseCommand
             "обновитькнигу" => "Обновление информации о книге по ID",
             "удалитькнигу" => "Удаление книги по ID",
             "найтикниги" => "Поиск книг по названию, автору, жанру или году",
+            "добавитьчитателя" => "Добавление нового читателя в библиотеку",
+            "обновитьчитателя" => "Обновление информации о читателе по ID",
+            "удалитьчитателя" => "Удаление читателя по ID",
+            "найтичитателей" => "Поиск читателей по ФИО, email или телефону",
+            "получитьчитателя" => "Получение информации о читателе по ID",
             _ => string.Empty
         };
     }

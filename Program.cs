@@ -24,6 +24,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IConsoleUIService, ConsoleUIService>();
         services.AddTransient<ILibrarianService, LibrarianService>();
         services.AddTransient<IBookService, BookService>();
+        services.AddTransient<IReaderService, ReaderService>();
         services.AddTransient<ICommandProcessorService, CommandProcessorService>();
         services.AddTransient<IAuthService, AuthService>();
 

@@ -5,10 +5,11 @@ namespace TopLibraryManager.Commands;
 public class CreateBookCommand : BaseCommand
 {
     public CreateBookCommand(
-        IConsoleUIService consoleUIService, 
+        IConsoleUIService consoleUIService,
         ILibrarianService librarianService,
-        IBookService bookService) 
-        : base(consoleUIService, librarianService, bookService)
+        IBookService bookService,
+        IReaderService readerService)
+        : base(consoleUIService, librarianService, bookService, readerService)
     {
     }
     
@@ -21,19 +22,19 @@ public class CreateBookCommand : BaseCommand
         
         do 
         { 
-            title = _consoleUIService.ReadLine("Название книги: "); 
+            title = _consoleUIService.ReadLine("Название книги: ");
         } 
         while (string.IsNullOrWhiteSpace(title));
         
         do 
         { 
-            author = _consoleUIService.ReadLine("Автор: "); 
+            author = _consoleUIService.ReadLine("Автор: ");
         } 
         while (string.IsNullOrWhiteSpace(author));
         
         do 
         { 
-            genre = _consoleUIService.ReadLine("Жанр: "); 
+            genre = _consoleUIService.ReadLine("Жанр: ");
         } 
         while (string.IsNullOrWhiteSpace(genre));
         

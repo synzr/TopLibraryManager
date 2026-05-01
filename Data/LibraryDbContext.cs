@@ -15,6 +15,11 @@ public class LibraryDbContext : DbContext
     /// </summary>
     public DbSet<Book> Books { get; set; }
 
+    /// <summary>
+    /// Читатели
+    /// </summary>
+    public DbSet<Reader> Readers { get; set; }
+
     public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
     {
     }

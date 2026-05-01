@@ -5,10 +5,11 @@ namespace TopLibraryManager.Commands;
 public class SearchBooksCommand : BaseCommand
 {
     public SearchBooksCommand(
-        IConsoleUIService consoleUIService, 
+        IConsoleUIService consoleUIService,
         ILibrarianService librarianService,
-        IBookService bookService) 
-        : base(consoleUIService, librarianService, bookService)
+        IBookService bookService,
+        IReaderService readerService)
+        : base(consoleUIService, librarianService, bookService, readerService)
     {
     }
     

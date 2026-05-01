@@ -7,8 +7,9 @@ public class ExitCommand : BaseCommand
     public ExitCommand(
         IConsoleUIService consoleUIService,
         ILibrarianService librarianService,
-        IBookService bookService)
-        : base(consoleUIService, librarianService, bookService)
+        IBookService bookService,
+        IReaderService readerService)
+        : base(consoleUIService, librarianService, bookService, readerService)
     {
     }
 

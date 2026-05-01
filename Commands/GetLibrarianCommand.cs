@@ -1,4 +1,5 @@
-using TopLibraryManager.Services;
+﻿using TopLibraryManager.Services;
+using TopLibraryManager.Models.Entities;
 
 namespace TopLibraryManager.Commands;
 
@@ -7,8 +8,9 @@ public class GetLibrarianCommand : BaseCommand
     public GetLibrarianCommand(
         IConsoleUIService consoleUIService,
         ILibrarianService librarianService,
-        IBookService bookService)
-        : base(consoleUIService, librarianService, bookService)
+        IBookService bookService,
+        IReaderService readerService)
+        : base(consoleUIService, librarianService, bookService, readerService)
     {
     }
 
@@ -24,31 +26,26 @@ public class GetLibrarianCommand : BaseCommand
         string input = args[0];
         _consoleUIService.WriteLine("\n=== Информация о библиотекаре ===");
 
-        Models.Entities.Librarian? librarian = null;
+        Librarian? librarian = null;
 
-        // пытаемся интерпретировать ввод как ID
         if (int.TryParse(input, out int id))
         {
             librarian = _librarianService.GetLibrarianById(id);
         }
         else
         {
-            // иначе ищем по логину
             librarian = _librarianService.GetLibrarianByLogin(input);
         }
 
         if (librarian == null)
         {
-            _consoleUIService.WriteLine($"\nБиблиотекарь не найден.");
+            _consoleUIService.WriteLine($"Библиотекарь '{input}' не найден.");
             return true;
         }
 
-        _consoleUIService.WriteLines([
-            $"\nИнформация о библиотекаре:",
-            $"  ID: {librarian.Id}",
-            $"  ФИО: {librarian.Fio}",
-            $"  Логин: {librarian.Login}"
-        ]);
+        _consoleUIService.WriteLine($"ID: {librarian.Id}");
+        _consoleUIService.WriteLine($"ФИО: {librarian.Fio}");
+        _consoleUIService.WriteLine($"Логин: {librarian.Login}");
 
         return true;
     }

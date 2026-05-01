@@ -5,10 +5,11 @@ namespace TopLibraryManager.Commands;
 public class DeleteBookCommand : BaseCommand
 {
     public DeleteBookCommand(
-        IConsoleUIService consoleUIService, 
+        IConsoleUIService consoleUIService,
         ILibrarianService librarianService,
-        IBookService bookService) 
-        : base(consoleUIService, librarianService, bookService)
+        IBookService bookService,
+        IReaderService readerService)
+        : base(consoleUIService, librarianService, bookService, readerService)
     {
     }
     
